@@ -302,7 +302,6 @@ Antes de fazer o deploy, verifique:
 ## 📞 Suporte
 
 Em caso de dúvidas:
-- Documentação: [docs.sofiacrm.com.br](https://docs.sofiacrm.com.br)
 - Suporte: Entre em contato com a equipe SofiaCRM
 
 ---
