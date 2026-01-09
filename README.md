@@ -16,6 +16,7 @@ Este guia fornece um passo a passo detalhado para preencher todas as credenciais
 | `SEU_TOKEN_DA_LICENÇA` | Token da licença Pro | Recebido na compra |
 | `META_CLOUD_SERVICE_TOKEN` | Token do serviço Meta Cloud | Token hexadecimal 32 bytes |
 | `URL_DO_CRM` | URL pública do seu CRM | Seu domínio |
+| `SUA_REDE` | Nome da rede Docker do Traefik | Nome da sua rede existente |
 
 ---
 
@@ -215,11 +216,31 @@ PUBLIC_BASE_URL: https://app.sofiacrm.com.br
 
 ---
 
-### Passo 6: Configurar a Rede
+### Passo 6: Configurar a Rede Docker
 
 Substitua `SUA_REDE` pelo nome da sua rede Docker onde o Traefik está rodando.
 
-**Exemplo:**
+> ⚠️ **IMPORTANTE:** A rede deve existir previamente e o Traefik deve estar conectado a ela!
+
+**Para verificar suas redes existentes:**
+```bash
+docker network ls
+```
+
+**Locais onde substituir `SUA_REDE`:**
+
+1. **Networks de cada serviço (3 lugares):**
+```yaml
+networks:
+  - minha_rede_traefik
+```
+
+2. **Labels do Traefik (3 lugares):**
+```yaml
+- "traefik.swarm.network=minha_rede_traefik"
+```
+
+3. **Seção networks no final do arquivo:**
 ```yaml
 networks:
   minha_rede_traefik:
@@ -227,7 +248,8 @@ networks:
     name: minha_rede_traefik
 ```
 
-E atualize todas as referências de `SUA_REDE` para o nome correto da sua rede.
+**Exemplo completo** (se sua rede se chama `traefik_public`):
+- Substitua todas as ocorrências de `SUA_REDE` por `traefik_public`
 
 ---
 
@@ -244,7 +266,7 @@ Antes de fazer o deploy, verifique:
 - [ ] `META_CLOUD_SERVICE_TOKEN` substituído nos **2 serviços** (mesmo valor)
 - [ ] `URL_DO_CRM` substituída nos **4 lugares**
 - [ ] `PUBLIC_BASE_URL` com `https://` no início
-- [ ] `SUA_REDE` substituída pelo nome correto da rede Docker
+- [ ] `SUA_REDE` substituída em **todos os lugares** (networks dos serviços + labels do Traefik + seção networks)
 - [ ] Rede externa existe e Traefik está conectado a ela
 
 ---
@@ -267,3 +289,4 @@ Em caso de dúvidas:
 ---
 
 *Documento atualizado em: Janeiro/2026*
+
