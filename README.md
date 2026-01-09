@@ -4,19 +4,36 @@ Este guia fornece um passo a passo detalhado para preencher todas as credenciais
 
 ---
 
+## ⚠️ AVISO IMPORTANTE - Ambiente Existente vs Nova Instalação
+
+> **Se você já possui um ambiente configurado** (PostgreSQL e Redis já rodando), **NÃO gere novas senhas**! 
+> 
+> Use as credenciais que já existem no seu ambiente:
+> - `SENHA_DO_POSTGRES` → Use a senha atual do seu PostgreSQL
+> - `SENHA_DO_REDIS` → Use a senha atual do seu Redis
+> - Outros tokens já configurados → Mantenha os valores existentes
+>
+> **Gerar novas credenciais é apenas para NOVAS INSTALAÇÕES do zero!**
+
+---
+
 ## 📋 Resumo das Credenciais
 
-| Variável | Descrição | Como Gerar |
+| Variável | Descrição | Como Obter |
 |----------|-----------|------------|
-| `SENHA_DO_POSTGRES` | Senha do banco de dados PostgreSQL | Token hexadecimal 32 bytes |
-| `SENHA_DO_REDIS` | Senha do Redis | Token hexadecimal 32 bytes |
-| `SEU_JWT_TOKEN` | Token para autenticação JWT | Token hexadecimal 32 bytes |
-| `INTERNAL_TOKEN` | Token de comunicação interna | Token hexadecimal 32 bytes |
+| `SENHA_DO_POSTGRES` | Senha do banco de dados PostgreSQL | 🔄 Existente ou 🆕 Token hex 32 bytes |
+| `SENHA_DO_REDIS` | Senha do Redis | 🔄 Existente ou 🆕 Token hex 32 bytes |
+| `SEU_JWT_TOKEN` | Token para autenticação JWT | 🔄 Existente ou 🆕 Token hex 32 bytes |
+| `INTERNAL_TOKEN` | Token de comunicação interna | 🔄 Existente ou 🆕 Token hex 32 bytes |
 | `INTERNAL_WEBHOOK_TOKEN` | Token de webhook interno | **Igual ao INTERNAL_TOKEN** |
-| `SEU_TOKEN_DA_LICENÇA` | Token da licença Pro | Recebido na compra |
-| `META_CLOUD_SERVICE_TOKEN` | Token do serviço Meta Cloud | Token hexadecimal 32 bytes |
-| `URL_DO_CRM` | URL pública do seu CRM | Seu domínio |
-| `SUA_REDE` | Nome da rede Docker do Traefik | Nome da sua rede existente |
+| `SEU_TOKEN_DA_LICENÇA` | Token da licença Pro | 🎫 Recebido na compra |
+| `META_CLOUD_SERVICE_TOKEN` | Token do serviço Meta Cloud | 🔄 Existente ou 🆕 Token hex 32 bytes |
+| `URL_DO_CRM` | URL pública do seu CRM | 🌐 Seu domínio |
+| `SUA_REDE` | Nome da rede Docker do Traefik | 🐳 Nome da sua rede existente |
+
+**Legenda:**
+- 🔄 **Existente** = Use o valor que já está configurado no seu ambiente
+- 🆕 **Novo** = Gere apenas se for uma instalação do zero
 
 ---
 
@@ -24,7 +41,9 @@ Este guia fornece um passo a passo detalhado para preencher todas as credenciais
 
 ### Passo 1: Gerar Tokens de Segurança
 
-Você precisa gerar **5 tokens únicos** (hexadecimais de 32 bytes). 
+> 🔄 **Ambiente existente?** Pule para o [Passo 2](#passo-2-organizar-os-tokens-gerados) e use suas credenciais atuais!
+
+**Para NOVAS instalações**, você precisa gerar **5 tokens únicos** (hexadecimais de 32 bytes). 
 
 #### Opção A: Via Terminal (SSH)
 
