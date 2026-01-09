@@ -44,6 +44,7 @@ services:
       LOG_LEVEL: INFO
       DISABLE_TRIAL_REGISTRATION: 1
       APP_LOCALE: pt-BR
+      API_TOKEN_RATE_LIMIT_MAX: 100      # Requisições por minuto por token de integração (tk_xxx)
       
       # ============================================
       # OBRIGATÓRIAS PARA VERSÃO PRO - Licença
@@ -104,6 +105,7 @@ services:
       CRM_API_URL: http://crm_api:3000
       INTERNAL_WEBHOOK_TOKEN: INTERNAL_WEBHOOK_TOKEN  #Igual o INTERNAL_TOKEN
       STORE_PATH: /app/data
+      WHATSAPP_DEVICE_NAME: whatsapp
     volumes:
       - whatsmeow_data:/app/data
     networks:
