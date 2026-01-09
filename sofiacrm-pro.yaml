@@ -1,0 +1,179 @@
+# Stack para Portainer - CRM com serviços externos (PostgreSQL e Redis)
+# Com suporte a WhatsApp Cloud API (Meta)
+
+# IMPORTANTE: Certifique-se que a rede 'SUA_REDE' existe e o Traefik está nela
+
+services:
+  crm_api:
+    image: inovanode/sofiacrm-pro:homolog
+    container_name: crm_api
+    restart: always
+    environment:
+      # Database - Use DATABASE_URL ou configure individualmente
+      DATABASE_URL: postgresql://postgres:SENHA_DO_POSTGRES@pgvector:5432/crm
+      
+      # OU configure individualmente (redundante se usar DATABASE_URL acima):
+      #POSTGRES_HOST: pgvector
+      #POSTGRES_PORT: 5432
+      #POSTGRES_DB: crm
+      #POSTGRES_USER: postgres
+      #POSTGRES_PASSWORD: SENHA_DO_POSTGRES
+      
+      # Redis - Use REDIS_URL com senha incluída (recomendado)
+      REDIS_URL: redis://:SENHA_DO_REDIS@redis:6379
+      
+      # OU configure individualmente:
+      #REDIS_HOST: redis
+      #REDIS_PORT: 6379
+      #REDIS_PASSWORD: SENHA_DO_REDIS
+      
+      # Application
+      NODE_ENV: production
+      PORT: 3000
+      MEDIA_DIR: /app/media
+      
+      # Security - IMPORTANTE: Use valores únicos e seguros
+      JWT_SECRET: SEU_JWT_TOKEN
+      INTERNAL_TOKEN: INTERNAL_TOKEN  #Igual o INTERNAL_WEBHOOK_TOKEN
+      INTERNAL_WEBHOOK_TOKEN: INTERNAL_WEBHOOK_TOKEN  #Igual o INTERNAL_TOKEN
+      
+      # Features
+      CONTACTS_UPDATE_INTERVAL_HOURS: 1
+      CONTACTS_UPDATE_BATCH_SIZE: 100
+      LOG_LEVEL: INFO
+      DISABLE_TRIAL_REGISTRATION: 1
+      APP_LOCALE: pt-BR
+      
+      # ============================================
+      # OBRIGATÓRIAS PARA VERSÃO PRO - Licença
+      # ============================================
+      LICENSE_TOKEN: SEU_TOKEN_DA_LICENÇA
+      
+      # ============================================
+      # WHATSAPP CLOUD API (META) - NOVO!
+      # ============================================
+      # URL interna do serviço meta-cloud-service (comunicação dentro da rede Docker)
+      META_CLOUD_SERVICE_URL: http://meta-cloud-service:8090
+      
+      # Token para comunicação service-to-service (CRM <-> Meta Cloud Service)
+      # IMPORTANTE: Use o mesmo valor no crm_api e no meta-cloud-service!
+      # Gere um token forte via ssh: openssl rand -hex 32 
+      # Gere um token forte pelo site: https://www.hexhero.com/tools/random-key-generator Selecione Hexadecimal em Options e Key Strength 32 Bytes.
+      # Exemplo: 6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
+      META_CLOUD_SERVICE_TOKEN: META_CLOUD_SERVICE_TOKEN
+      
+      # URL pública do CRM (OBRIGATÓRIO para mídia via Cloud API)
+      # A Meta usa essa URL para baixar arquivos de mídia do seu servidor
+      # Exemplo https://app.sofiacrm.com.br
+      PUBLIC_BASE_URL: https://URL_DO_CRM
+    
+    volumes:
+      - media_data:/app/media
+    
+    networks:
+      - SUA_REDE
+    
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Porta exposta (opcional se usar apenas Traefik)
+    ports:
+      - "3000:3000"
+    
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.swarm.network=SUA_REDE"
+        - "traefik.http.routers.crm_api.rule=Host(`URL_DO_CRM`)"
+        - "traefik.http.routers.crm_api.entrypoints=websecure"
+        - "traefik.http.routers.crm_api.priority=1"
+        - "traefik.http.routers.crm_api.tls.certresolver=letsencryptresolver"
+        - "traefik.http.routers.crm_api.service=crm_api"
+        - "traefik.http.services.crm_api.loadbalancer.server.port=3000"
+
+  whats-service:
+    image: inovanode/sofiacrm-whats-service-pro:latest
+    container_name: crm_whatsmeow
+    restart: always
+    environment:
+      CRM_API_URL: http://crm_api:3000
+      INTERNAL_WEBHOOK_TOKEN: INTERNAL_WEBHOOK_TOKEN  #Igual o INTERNAL_TOKEN
+      STORE_PATH: /app/data
+    volumes:
+      - whatsmeow_data:/app/data
+    networks:
+      - SUA_REDE
+    depends_on:
+      - crm_api
+
+  # ============================================
+  # META CLOUD SERVICE - WhatsApp Cloud API
+  # ============================================
+  # Este serviço gerencia a comunicação com a API oficial do WhatsApp (Meta)
+  # Permite usar números verificados via WhatsApp Business API
+  meta-cloud-service:
+    image: inovanode/sofia-meta-cloud-service-pro:latest
+    container_name: crm_meta_cloud
+    restart: always
+    environment:
+      # URL do CRM API para comunicação interna
+      CRM_API_URL: http://crm_api:3000
+      
+      # Token de autenticação service-to-service
+      # CRÍTICO: Deve ser EXATAMENTE o mesmo valor do META_CLOUD_SERVICE_TOKEN no crm_api
+      # Gere um token forte via ssh: openssl rand -hex 32 
+      # Gere um token forte pelo site: https://www.hexhero.com/tools/random-key-generator Selecione Hexadecimal em Options e Key Strength 32 Bytes.
+      # Exemplo: 6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
+      META_CLOUD_SERVICE_TOKEN: META_CLOUD_SERVICE_TOKEN
+      
+      # Porta interna do serviço
+      PORT: 8090
+    
+    networks:
+      - SUA_REDE
+    
+    depends_on:
+      - crm_api
+    
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.swarm.network=SUA_REDE"
+        
+        # ============================================
+        # Rota 1: Webhook público (Meta -> seu servidor)
+        # A Meta envia notificações de mensagens recebidas para esta URL
+        # ============================================
+        - "traefik.http.routers.meta_webhook.rule=Host(`URL_DO_CRM`) && PathPrefix(`/api/webhooks/meta/whatsapp`)"
+        - "traefik.http.routers.meta_webhook.entrypoints=websecure"
+        - "traefik.http.routers.meta_webhook.tls.certresolver=letsencryptresolver"
+        - "traefik.http.routers.meta_webhook.priority=20"
+        - "traefik.http.routers.meta_webhook.service=meta_cloud"
+        
+        # ============================================
+        # Rota 2: API interna (CRM -> Meta Cloud Service)
+        # Usada internamente para enviar mensagens e templates
+        # ============================================
+        - "traefik.http.routers.meta_cloud.rule=Host(`URL_DO_CRM`) && PathPrefix(`/api/meta-cloud`)"
+        - "traefik.http.routers.meta_cloud.entrypoints=websecure"
+        - "traefik.http.routers.meta_cloud.tls.certresolver=letsencryptresolver"
+        - "traefik.http.routers.meta_cloud.priority=20"
+        - "traefik.http.routers.meta_cloud.service=meta_cloud"
+        
+        # Porta do serviço
+        - "traefik.http.services.meta_cloud.loadbalancer.server.port=8090"
+
+volumes:
+  whatsmeow_data:
+    driver: local
+  media_data:
+    driver: local
+
+networks:
+  SUA_REDE:
+    external: true
+    name: SUA_REDE
