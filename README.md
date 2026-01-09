@@ -54,19 +54,26 @@ Antes de começar, certifique-se de ter:
 
 **Como gerar:**
 
+**Opção 1 - Via terminal SSH:**
 ```bash
-# Via terminal SSH
-openssl rand -base64 32
+openssl rand -hex 32
 ```
+
+**Opção 2 - Via site:**
+1. Acesse: https://www.hexhero.com/tools/random-key-generator
+2. Em **Options**, selecione: `Hexadecimal`
+3. Em **Key Strength**, selecione: `32 Bytes`
+4. Clique em **Generate**
+5. Copie o resultado
 
 **Exemplo de resultado:**
 ```
-kX7mN9pQ2rS5tU8vY1zA4bC7dE0fG3hI
+6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
 ```
 
 **Onde substituir no arquivo:**
 ```yaml
-DATABASE_URL: postgresql://postgres:kX7mN9pQ2rS5tU8vY1zA4bC7dE0fG3hI@pgvector:5432/crm
+DATABASE_URL: postgresql://postgres:6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec@pgvector:5432/crm
 ```
 
 > ⚠️ **IMPORTANTE:** Esta senha deve ser a mesma configurada no seu serviço PostgreSQL/pgvector.
@@ -79,19 +86,26 @@ DATABASE_URL: postgresql://postgres:kX7mN9pQ2rS5tU8vY1zA4bC7dE0fG3hI@pgvector:54
 
 **Como gerar:**
 
+**Opção 1 - Via terminal SSH:**
 ```bash
-# Via terminal SSH
-openssl rand -base64 24
+openssl rand -hex 32
 ```
+
+**Opção 2 - Via site:**
+1. Acesse: https://www.hexhero.com/tools/random-key-generator
+2. Em **Options**, selecione: `Hexadecimal`
+3. Em **Key Strength**, selecione: `32 Bytes`
+4. Clique em **Generate**
+5. Copie o resultado
 
 **Exemplo de resultado:**
 ```
-aB3cD4eF5gH6iJ7kL8mN9oP0
+6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
 ```
 
 **Onde substituir no arquivo:**
 ```yaml
-REDIS_URL: redis://:aB3cD4eF5gH6iJ7kL8mN9oP0@redis:6379
+REDIS_URL: redis://:6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec@redis:6379
 ```
 
 > ⚠️ **IMPORTANTE:** Esta senha deve ser a mesma configurada no seu serviço Redis.
@@ -104,19 +118,26 @@ REDIS_URL: redis://:aB3cD4eF5gH6iJ7kL8mN9oP0@redis:6379
 
 **Como gerar:**
 
+**Opção 1 - Via terminal SSH:**
 ```bash
-# Via terminal SSH (recomendado: 64 caracteres hexadecimais)
 openssl rand -hex 32
 ```
 
+**Opção 2 - Via site:**
+1. Acesse: https://www.hexhero.com/tools/random-key-generator
+2. Em **Options**, selecione: `Hexadecimal`
+3. Em **Key Strength**, selecione: `32 Bytes`
+4. Clique em **Generate**
+5. Copie o resultado
+
 **Exemplo de resultado:**
 ```
-a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
+6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
 ```
 
 **Onde substituir no arquivo:**
 ```yaml
-JWT_SECRET: a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
+JWT_SECRET: 6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
 ```
 
 > 🔒 **SEGURANÇA:** Nunca compartilhe este token. Se comprometido, todos os usuários precisarão fazer login novamente.
@@ -131,27 +152,34 @@ JWT_SECRET: a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
 
 **Como gerar:**
 
+**Opção 1 - Via terminal SSH:**
 ```bash
-# Via terminal SSH
 openssl rand -hex 32
 ```
 
+**Opção 2 - Via site:**
+1. Acesse: https://www.hexhero.com/tools/random-key-generator
+2. Em **Options**, selecione: `Hexadecimal`
+3. Em **Key Strength**, selecione: `32 Bytes`
+4. Clique em **Generate**
+5. Copie o resultado
+
 **Exemplo de resultado:**
 ```
-7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a
+6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
 ```
 
 **Onde substituir no arquivo:**
 
 No serviço `crm_api`:
 ```yaml
-INTERNAL_TOKEN: 7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a
-INTERNAL_WEBHOOK_TOKEN: 7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a
+INTERNAL_TOKEN: 6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
+INTERNAL_WEBHOOK_TOKEN: 6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
 ```
 
 No serviço `whats-service`:
 ```yaml
-INTERNAL_WEBHOOK_TOKEN: 7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a
+INTERNAL_WEBHOOK_TOKEN: 6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
 ```
 
 ---
@@ -160,15 +188,17 @@ INTERNAL_WEBHOOK_TOKEN: 7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c
 
 **Descrição:** Token de licença para ativar a versão Pro do SofiaCRM.
 
+> 🛒 **IMPORTANTE:** Este token é recebido na compra da licença Pro da SofiaCRM. Não é gerado manualmente.
+
 **Como obter:**
 
-1. Entre em contato com a equipe SofiaCRM
-2. Forneça os dados do seu CNPJ/empresa
-3. Após a aprovação, você receberá o token por email
+1. Adquira a licença Pro da SofiaCRM
+2. Após a confirmação do pagamento, você receberá o token por email
+3. Copie o token exatamente como recebido (sem espaços extras)
 
 **Onde substituir no arquivo:**
 ```yaml
-LICENSE_TOKEN: seu-token-de-licenca-recebido-por-email
+LICENSE_TOKEN: seu-token-de-licenca-recebido-na-compra
 ```
 
 > 📧 **Suporte:** Se você não possui um token de licença, entre em contato com suporte@sofiacrm.com.br
@@ -298,13 +328,15 @@ Antes de fazer o deploy, verifique:
 
 ## 📝 Resumo de Comandos
 
+**Via terminal SSH** - Execute para gerar todos os tokens de uma vez:
+
 ```bash
 # Gerar todas as credenciais de uma vez
 echo "=== SENHA_DO_POSTGRES ==="
-openssl rand -base64 32
+openssl rand -hex 32
 
 echo "=== SENHA_DO_REDIS ==="
-openssl rand -base64 24
+openssl rand -hex 32
 
 echo "=== JWT_SECRET ==="
 openssl rand -hex 32
@@ -315,6 +347,15 @@ openssl rand -hex 32
 echo "=== META_CLOUD_SERVICE_TOKEN ==="
 openssl rand -hex 32
 ```
+
+**Via site** - Para cada token acima (exceto LICENSE_TOKEN):
+1. Acesse: https://www.hexhero.com/tools/random-key-generator
+2. Em **Options**, selecione: `Hexadecimal`
+3. Em **Key Strength**, selecione: `32 Bytes`
+4. Clique em **Generate**
+5. Copie o resultado
+
+> 📌 **Lembre-se:** O `LICENSE_TOKEN` é recebido na compra da licença Pro, não é gerado manualmente.
 
 ---
 
