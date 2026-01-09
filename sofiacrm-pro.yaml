@@ -1,3 +1,4 @@
+version: "3.8"
 # Stack para Portainer - CRM com serviços externos (PostgreSQL e Redis)
 # Com suporte a WhatsApp Cloud API (Meta)
 
