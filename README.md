@@ -174,6 +174,10 @@ INTERNAL_TOKEN: 9a8b7c6d5e4f3g2h1i0j9k8l7m6n5o4p3q2r1s0t9u8v7w6x5y4z3a2b1c0d9e8
 INTERNAL_WEBHOOK_TOKEN: 9a8b7c6d5e4f3g2h1i0j9k8l7m6n5o4p3q2r1s0t9u8v7w6x5y4z3a2b1c0d9e8
 ```
 
+> ⚠️ **CRÍTICO:** O token **INTERNAL_WEBHOOK_TOKEN** deve ser **IDÊNTICO** em dois lugares:
+> - No serviço `crm_api`
+> - No serviço `whats-service`
+
 ---
 
 #### 5.5 - LICENSE_TOKEN
