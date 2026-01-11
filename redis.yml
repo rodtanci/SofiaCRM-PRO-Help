@@ -1,0 +1,40 @@
+version: "3.7"
+
+services:
+  redis:
+    image: redis:latest
+    command: [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--port",
+        "6379",
+        "--requirepass",
+        "SENHA_REDIS",
+        "--maxmemory-policy",
+        "noeviction"
+      ]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - SUA_REDE_AQUI
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2048M
+
+volumes:
+  redis_data:
+    external: true
+    name: redis_data
+
+networks:
+  SUA_REDE_AQUI:
+    external: true
+    name: SUA_REDE_AQUI
