@@ -65,7 +65,6 @@ openssl rand -hex 32
 3. Em **Key Strength**, selecione: `32 Bytes`
 4. Clique em **Generate**
 5. Copie o token gerado
-6. Repita o processo **5 vezes** para obter todos os tokens necessários
 
 ---
 
