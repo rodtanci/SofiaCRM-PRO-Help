@@ -74,11 +74,11 @@ Anote os tokens gerados e associe cada um a uma variável:
 
 | # | Variável | Seu Token |
 |---|----------|-----------|
-| 1 | `SENHA_DO_POSTGRES` | `[cole_aqui_token_1]` |
-| 2 | `SENHA_DO_REDIS` | `[cole_aqui_token_2]` |
-| 3 | `SEU_JWT_TOKEN` | `[cole_aqui_token_3]` |
-| 4 | `INTERNAL_TOKEN` e `INTERNAL_WEBHOOK_TOKEN` | `[cole_aqui_token_4]` |
-| 5 | `META_CLOUD_SERVICE_TOKEN` | `[cole_aqui_token_5]` |
+| 1 | `SENHA_DO_POSTGRES` | `[senha_postgres]` |
+| 2 | `SENHA_DO_REDIS` | `[senha_redis]` |
+| 3 | `SEU_JWT_TOKEN` | `[cole_aqui_token_1]` |
+| 4 | `INTERNAL_TOKEN` e `INTERNAL_WEBHOOK_TOKEN` | `[cole_aqui_token_2]` |
+| 5 | `META_CLOUD_SERVICE_TOKEN` | `[cole_aqui_token_3]` |
 
 > ⚠️ **IMPORTANTE:** O `INTERNAL_TOKEN` e `INTERNAL_WEBHOOK_TOKEN` devem ter **o mesmo valor**!
 
