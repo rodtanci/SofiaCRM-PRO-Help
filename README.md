@@ -185,7 +185,7 @@ LICENSE_TOKEN: SEU_TOKEN_DA_LICENÇA
 
 **Depois:**
 ```yaml
-LICENSE_TOKEN: [token_recebido_na_compra]
+LICENSE_TOKEN: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
 ```
 
 ---
