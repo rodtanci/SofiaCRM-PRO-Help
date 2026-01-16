@@ -6,7 +6,7 @@ version: "3.8"
 
 services:
   crm_api:
-    image: inovanode/sofiacrm-pro:homolog
+    image: inovanode/sofiacrm-pro:latest
     container_name: crm_api
     restart: always
     environment:
