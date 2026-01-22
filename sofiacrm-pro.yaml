@@ -120,6 +120,29 @@ services:
       INTERNAL_WEBHOOK_TOKEN: INTERNAL_WEBHOOK_TOKEN  #Igual o INTERNAL_TOKEN
       STORE_PATH: /app/data
       WHATSAPP_DEVICE_NAME: whatsapp
+
+      # --- WhatsApp (whatsmeow-service) - Presence pulse (opcional) ---
+      # Ativa/desativa o “pulso de presença” para manter a sessão do WhatsApp “quente” sem enviar mensagens.
+      #WHATSAPP_PRESENCE_PULSE_ENABLED: 1
+      # Intervalo entre pulsos de presença (ex.: 12h).
+      #WHATSAPP_PRESENCE_PULSE_INTERVAL: 12
+      # Duração de cada pulso (tempo alternando presença) (ex.: 15s).
+      #WHATSAPP_PRESENCE_PULSE_DURATION: 1
+      # Atraso inicial após iniciar o serviço antes do primeiro pulso (ex.: 60s).
+      #WHATSAPP_PRESENCE_PULSE_START_DELAY: 60
+      # Variação aleatória aplicada ao intervalo para evitar padrão fixo (ex.: 60s).
+      #WHATSAPP_PRESENCE_PULSE_JITTER: 60
+
+      # Objetivo: antes do contato receber a mensagem, mostrar "digitando..." (texto) ou "gravando áudio..." (PTT).
+      # Ativa/desativa (1/0) mostrar “digitando…” antes de enviar mensagens de texto (adiciona latência).
+      #WHATSAPP_PRESENCE_BEFORE_TEXT_ENABLED: 1
+      # Duração do “digitando…” antes do envio (ex.: 3s).
+      #WHATSAPP_PRESENCE_BEFORE_TEXT_DURATION: 3
+      # Ativa/desativa (1/0) mostrar “gravando áudio…” antes de enviar PTT/áudio (adiciona latência).
+      #WHATSAPP_PRESENCE_BEFORE_AUDIO_ENABLED: 1
+      # Duração do “gravando áudio…” antes do envio (ex.: 3s).
+      #WHATSAPP_PRESENCE_BEFORE_AUDIO_DURATION: 3
+      
     volumes:
       - whatsmeow_data:/app/data
     networks:
