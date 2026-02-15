@@ -49,8 +49,7 @@ services:
       
       # Security - IMPORTANTE: Use valores únicos e seguros
       JWT_SECRET: SEU_JWT_TOKEN
-      INTERNAL_TOKEN: INTERNAL_TOKEN  #Igual o INTERNAL_WEBHOOK_TOKEN
-      INTERNAL_WEBHOOK_TOKEN: INTERNAL_WEBHOOK_TOKEN  #Igual o INTERNAL_TOKEN
+      INTERNAL_WEBHOOK_TOKEN: INTERNAL_WEBHOOK_TOKEN
       
       # Features
       CONTACTS_UPDATE_INTERVAL_HOURS: 1
@@ -117,7 +116,7 @@ services:
     restart: always
     environment:
       CRM_API_URL: http://crm_api:3000
-      INTERNAL_WEBHOOK_TOKEN: INTERNAL_WEBHOOK_TOKEN  #Igual o INTERNAL_TOKEN
+      INTERNAL_WEBHOOK_TOKEN: INTERNAL_WEBHOOK_TOKEN  #Igual o INTERNAL_WEBHOOK_TOKEN do serviço crm_api
       STORE_PATH: /app/data
       WHATSAPP_DEVICE_NAME: whatsapp
 
@@ -206,6 +205,24 @@ services:
         
         # Porta do serviço
         - "traefik.http.services.meta_cloud.loadbalancer.server.port=8090"
+
+  wa-call-gateway:
+    image: inovanode/sofiacrm-gateway:latest
+    restart: always
+    environment:
+      PORT: 8091
+      GATEWAY_UDP_MIN: 30000
+      GATEWAY_UDP_MAX: 30100
+      GATEWAY_PUBLIC_IP: IP_DA_VPS
+      CRM_API_URL: http://crm_api:3000
+      INTERNAL_WEBHOOK_TOKEN: INTERNAL_WEBHOOK_TOKEN #Igual o INTERNAL_WEBHOOK_TOKEN do serviço crm_api
+    ports:
+      - "30000-30100:30000-30100/udp"
+      - "30000-30100:30000-30100/tcp"
+    networks:
+      - network
+    depends_on:
+      - crm_api
 
 volumes:
   whatsmeow_data:
