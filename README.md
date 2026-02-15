@@ -24,8 +24,7 @@ Este guia fornece um passo a passo detalhado para preencher todas as credenciais
 | `SENHA_DO_POSTGRES` | Senha do banco de dados PostgreSQL | 🔄 Existente ou 🆕 Token hex 32 bytes |
 | `SENHA_DO_REDIS` | Senha do Redis | 🔄 Existente ou 🆕 Token hex 32 bytes |
 | `SEU_JWT_TOKEN` | Token para autenticação JWT | 🔄 Existente ou 🆕 Token hex 32 bytes |
-| `INTERNAL_TOKEN` | Token de comunicação interna | 🔄 Existente ou 🆕 Token hex 32 bytes |
-| `INTERNAL_WEBHOOK_TOKEN` | Token de webhook interno | **Igual ao INTERNAL_TOKEN** |
+| `INTERNAL_WEBHOOK_TOKEN` | Token de webhook interno |
 | `SEU_TOKEN_DA_LICENÇA` | Token da licença Pro | 🎫 Recebido na compra |
 | `META_CLOUD_SERVICE_TOKEN` | Token do serviço Meta Cloud | 🔄 Existente ou 🆕 Token hex 32 bytes |
 | `URL_DO_CRM` | URL pública do seu CRM | 🌐 Seu domínio |
