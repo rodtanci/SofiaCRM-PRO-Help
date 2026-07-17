@@ -29,6 +29,7 @@ services:
       #REDIS_PASSWORD: SENHA_DO_REDIS
       
       # Application
+      INSTANCE_ROLE: api
       NODE_ENV: production
       PORT: 3000
       MEDIA_DIR: /app/media
@@ -109,6 +110,95 @@ services:
         - "traefik.http.routers.crm_api.tls.certresolver=letsencryptresolver"
         - "traefik.http.routers.crm_api.service=crm_api"
         - "traefik.http.services.crm_api.loadbalancer.server.port=3000"
+
+  crm_worker:
+    image: inovanode/sofiacrm-pro:latest
+    command: ["node", "dist/worker-entry.js"]
+    restart: always
+    environment:
+      # Database - Use DATABASE_URL ou configure individualmente
+      DATABASE_URL: postgresql://postgres:SENHA_DO_POSTGRES@pgvector:5432/crm
+      
+      # OU configure individualmente (redundante se usar DATABASE_URL acima):
+      #POSTGRES_HOST: pgvector
+      #POSTGRES_PORT: 5432
+      #POSTGRES_DB: crm
+      #POSTGRES_USER: postgres
+      #POSTGRES_PASSWORD: SENHA_DO_POSTGRES
+      
+      # Redis - Use REDIS_URL com senha incluída (recomendado)
+      REDIS_URL: redis://:SENHA_DO_REDIS@redis:6379
+      
+      # OU configure individualmente:
+      #REDIS_HOST: redis
+      #REDIS_PORT: 6379
+      #REDIS_PASSWORD: SENHA_DO_REDIS
+      
+      # Application
+      INSTANCE_ROLE: api
+      NODE_ENV: production
+      PORT: 3000
+      MEDIA_DIR: /app/media
+
+      # Storage de mídia:
+      # --- Storage de mídia (local ou s3) ---
+      STORAGE_TYPE: local
+
+      # AWS S3 (produção AWS padrão)
+      #AWS_REGION: 
+      #AWS_S3_BUCKET_NAME: 
+      #AWS_ACCESS_KEY_ID: 
+      #AWS_SECRET_ACCESS_KEY: 
+
+      # Suporte para S3 compatível (MinIO/Spaces/R2)
+      #AWS_S3_ENDPOINT: ${AWS_S3_ENDPOINT:-}
+      #AWS_S3_FORCE_PATH_STYLE: ${AWS_S3_FORCE_PATH_STYLE:-false}
+      
+      # Security - IMPORTANTE: Use valores únicos e seguros
+      JWT_SECRET: SEU_JWT_TOKEN
+      INTERNAL_WEBHOOK_TOKEN: INTERNAL_WEBHOOK_TOKEN
+      
+      # Features
+      CONTACTS_UPDATE_INTERVAL_HOURS: 1
+      CONTACTS_UPDATE_BATCH_SIZE: 100
+      LOG_LEVEL: INFO
+      DISABLE_TRIAL_REGISTRATION: 1
+      APP_LOCALE: pt-BR
+      API_TOKEN_RATE_LIMIT_MAX: 100      # Requisições por minuto por token de integração (tk_xxx)
+      
+      # ============================================
+      # OBRIGATÓRIAS PARA VERSÃO PRO - Licença
+      # ============================================
+      LICENSE_TOKEN: SEU_TOKEN_DA_LICENÇA
+      
+      # ============================================
+      # WHATSAPP CLOUD API (META) - NOVO!
+      # ============================================
+      # URL interna do serviço meta-cloud-service (comunicação dentro da rede Docker)
+      META_CLOUD_SERVICE_URL: http://meta-cloud-service:8090
+      
+      # Token para comunicação service-to-service (CRM <-> Meta Cloud Service)
+      # IMPORTANTE: Use o mesmo valor no crm_api e no meta-cloud-service!
+      # Gere um token forte via ssh: openssl rand -hex 32 
+      # Gere um token forte pelo site: https://www.hexhero.com/tools/random-key-generator Selecione Hexadecimal em Options e Key Strength 32 Bytes.
+      # Exemplo: 6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
+      META_CLOUD_SERVICE_TOKEN: META_CLOUD_SERVICE_TOKEN
+      
+      # URL pública do CRM (OBRIGATÓRIO para mídia via Cloud API)
+      # A Meta usa essa URL para baixar arquivos de mídia do seu servidor
+      # Exemplo https://app.sofiacrm.com.br
+      PUBLIC_BASE_URL: https://URL_DO_CRM
+      
+    volumes:
+      - media_data:/app/media
+      
+    networks:
+      - swarm_network
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 2G
 
   whats-service:
     image: inovanode/sofiacrm-whats-service-pro:latest
