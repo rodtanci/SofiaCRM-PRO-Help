@@ -135,7 +135,7 @@ services:
       #REDIS_PASSWORD: SENHA_DO_REDIS
       
       # Application
-      INSTANCE_ROLE: api
+      INSTANCE_ROLE: worker
       NODE_ENV: production
       PORT: 3000
       MEDIA_DIR: /app/media
