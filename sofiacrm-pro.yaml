@@ -231,6 +231,18 @@ services:
       #WHATSAPP_PRESENCE_BEFORE_AUDIO_ENABLED: 1
       # Duração do “gravando áudio…” antes do envio (ex.: 3s).
       #WHATSAPP_PRESENCE_BEFORE_AUDIO_DURATION: 3
+
+      # Ligações via WhatsApp (QR)
+      WHATSMEOW_CALLS_ENABLED: 1
+      WHATSMEOW_ICE_UDP_MIN: 30200
+      WHATSMEOW_ICE_UDP_MAX: 30300
+      # Opcional: o IP público é detectado sozinho. Se o áudio não passar,
+      # descomente e coloque o IP público do servidor.
+      # WHATSMEOW_PUBLIC_IP: 1.2.3.4
+
+    ports:
+      - "30200-30300:30200-30300/udp"
+      - "30200-30300:30200-30300/tcp"
       
     volumes:
       - whatsmeow_data:/app/data
