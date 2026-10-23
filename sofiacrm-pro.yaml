@@ -1,8 +1,23 @@
 version: "3.8"
 # Stack para Portainer - CRM com serviços externos (PostgreSQL e Redis)
-# Com suporte a WhatsApp Cloud API (Meta)
+# Com suporte a WhatsApp Cloud API (Meta) e ligações (API oficial e QR/whatsmeow)
 
 # IMPORTANTE: Certifique-se que a rede 'SUA_REDE' existe e o Traefik está nela
+# IMPORTANTE: No Portainer, crie a stack em um ambiente do tipo SWARM (não Standalone),
+#             senão os labels do Traefik em "deploy:" são ignorados.
+#
+# ============================================
+# LIGAÇÕES - CHECKLIST
+# ============================================
+# 1) Troque IP_DA_VPS pelo IP PÚBLICO do servidor (no whats-service e no wa-call-gateway).
+# 2) Libere no firewall da VPS (ufw/iptables) E no painel do provedor (security group):
+#      UDP 30000-30100  -> wa-call-gateway (ligações da API oficial)
+#      UDP 30200-30300  -> whats-service   (ligações do WhatsApp QR)
+# 3) API oficial: no painel da Meta, ative "Calling" no número e inscreva o
+#    webhook também no campo "calls" (além de "messages").
+# 4) No CRM, a empresa precisa estar com o módulo de ligações habilitado.
+# 5) Swarm com MAIS DE UM nó: o whats-service e o wa-call-gateway precisam rodar
+#    no nó do IP_DA_VPS (veja "placement" nesses serviços).
 
 services:
   crm_api:
@@ -13,20 +28,8 @@ services:
       # Database - Use DATABASE_URL ou configure individualmente
       DATABASE_URL: postgresql://postgres:SENHA_DO_POSTGRES@pgvector:5432/crm
       
-      # OU configure individualmente (redundante se usar DATABASE_URL acima):
-      #POSTGRES_HOST: pgvector
-      #POSTGRES_PORT: 5432
-      #POSTGRES_DB: crm
-      #POSTGRES_USER: postgres
-      #POSTGRES_PASSWORD: SENHA_DO_POSTGRES
-      
       # Redis - Use REDIS_URL com senha incluída (recomendado)
       REDIS_URL: redis://:SENHA_DO_REDIS@redis:6379
-      
-      # OU configure individualmente:
-      #REDIS_HOST: redis
-      #REDIS_PORT: 6379
-      #REDIS_PASSWORD: SENHA_DO_REDIS
       
       # Application
       INSTANCE_ROLE: api
@@ -64,6 +67,14 @@ services:
       # OBRIGATÓRIAS PARA VERSÃO PRO - Licença
       # ============================================
       LICENSE_TOKEN: SEU_TOKEN_DA_LICENÇA
+
+      # ============================================
+      # LIGAÇÕES WHATSAPP (API oficial e QR)
+      # ============================================
+      # Liga o módulo de ligações na stack (padrão já é ligado; 0 desliga)
+      MODULE_WHATSMEOW_CALLS_FEATURE_ENABLED: 1
+      # Endereço interno do wa-call-gateway (áudio das ligações da API oficial)
+      CALL_GATEWAY_URL: http://wa-call-gateway:8091
       
       # ============================================
       # WHATSAPP CLOUD API (META) - NOVO!
@@ -72,7 +83,7 @@ services:
       META_CLOUD_SERVICE_URL: http://meta-cloud-service:8090
       
       # Token para comunicação service-to-service (CRM <-> Meta Cloud Service)
-      # IMPORTANTE: Use o mesmo valor no crm_api e no meta-cloud-service!
+      # IMPORTANTE: Use o mesmo valor no crm_api, crm_worker e meta-cloud-service!
       # Gere um token forte via ssh: openssl rand -hex 32 
       # Gere um token forte pelo site: https://www.hexhero.com/tools/random-key-generator Selecione Hexadecimal em Options e Key Strength 32 Bytes.
       # Exemplo: 6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
@@ -119,20 +130,8 @@ services:
       # Database - Use DATABASE_URL ou configure individualmente
       DATABASE_URL: postgresql://postgres:SENHA_DO_POSTGRES@pgvector:5432/crm
       
-      # OU configure individualmente (redundante se usar DATABASE_URL acima):
-      #POSTGRES_HOST: pgvector
-      #POSTGRES_PORT: 5432
-      #POSTGRES_DB: crm
-      #POSTGRES_USER: postgres
-      #POSTGRES_PASSWORD: SENHA_DO_POSTGRES
-      
       # Redis - Use REDIS_URL com senha incluída (recomendado)
       REDIS_URL: redis://:SENHA_DO_REDIS@redis:6379
-      
-      # OU configure individualmente:
-      #REDIS_HOST: redis
-      #REDIS_PORT: 6379
-      #REDIS_PASSWORD: SENHA_DO_REDIS
       
       # Application
       INSTANCE_ROLE: worker
@@ -170,6 +169,12 @@ services:
       # OBRIGATÓRIAS PARA VERSÃO PRO - Licença
       # ============================================
       LICENSE_TOKEN: SEU_TOKEN_DA_LICENÇA
+
+      # ============================================
+      # LIGAÇÕES WHATSAPP (API oficial e QR) - iguais ao crm_api
+      # ============================================
+      MODULE_WHATSMEOW_CALLS_FEATURE_ENABLED: 1
+      CALL_GATEWAY_URL: http://wa-call-gateway:8091
       
       # ============================================
       # WHATSAPP CLOUD API (META) - NOVO!
@@ -178,7 +183,7 @@ services:
       META_CLOUD_SERVICE_URL: http://meta-cloud-service:8090
       
       # Token para comunicação service-to-service (CRM <-> Meta Cloud Service)
-      # IMPORTANTE: Use o mesmo valor no crm_api e no meta-cloud-service!
+      # IMPORTANTE: Use o mesmo valor no crm_api, crm_worker e meta-cloud-service!
       # Gere um token forte via ssh: openssl rand -hex 32 
       # Gere um token forte pelo site: https://www.hexhero.com/tools/random-key-generator Selecione Hexadecimal em Options e Key Strength 32 Bytes.
       # Exemplo: 6d2b956c30ea7f07039fb3d9e0f7f21b8e6f3b63cbb5aaecf0e12d901d79c6ec
@@ -193,7 +198,7 @@ services:
       - media_data:/app/media
       
     networks:
-      - swarm_network
+      - SUA_REDE
     deploy:
       replicas: 1
       resources:
@@ -232,13 +237,17 @@ services:
       # Duração do “gravando áudio…” antes do envio (ex.: 3s).
       #WHATSAPP_PRESENCE_BEFORE_AUDIO_DURATION: 3
 
-      # Ligações via WhatsApp (QR)
+      # ============================================
+      # LIGAÇÕES VIA WHATSAPP (QR)
+      # ============================================
       WHATSMEOW_CALLS_ENABLED: 1
+      # Faixa de portas UDP do áudio. Tem que bater com "ports" abaixo e com o firewall.
       WHATSMEOW_ICE_UDP_MIN: 30200
       WHATSMEOW_ICE_UDP_MAX: 30300
-      # Opcional: o IP público é detectado sozinho. Se o áudio não passar,
-      # descomente e coloque o IP público do servidor.
-      # WHATSMEOW_PUBLIC_IP: 1.2.3.4
+      # IP PÚBLICO do servidor (o mesmo do GATEWAY_PUBLIC_IP).
+      # Sem ele o serviço tenta descobrir o IP sozinho; se falhar, anuncia só
+      # endereços internos do Docker e a ligação fica MUDA.
+      WHATSMEOW_PUBLIC_IP: IP_DA_VPS
 
     ports:
       - "30200-30300:30200-30300/udp"
@@ -250,12 +259,19 @@ services:
       - SUA_REDE
     depends_on:
       - crm_api
+    deploy:
+      replicas: 1
+      # Swarm com mais de um nó: descomente para rodar no nó do IP_DA_VPS
+      #placement:
+      #  constraints: [node.hostname == NOME_DO_NO]
 
   # ============================================
   # META CLOUD SERVICE - WhatsApp Cloud API
   # ============================================
   # Este serviço gerencia a comunicação com a API oficial do WhatsApp (Meta)
   # Permite usar números verificados via WhatsApp Business API
+  # Ligações da API oficial: ative "Calling" no número (painel da Meta) e
+  # inscreva o webhook também no campo "calls".
   meta-cloud-service:
     image: inovanode/sofia-meta-cloud-service-pro:latest
     container_name: crm_meta_cloud
@@ -287,7 +303,7 @@ services:
         
         # ============================================
         # Rota 1: Webhook público (Meta -> seu servidor)
-        # A Meta envia notificações de mensagens recebidas para esta URL
+        # A Meta envia mensagens e eventos de ligação recebidos para esta URL
         # ============================================
         - "traefik.http.routers.meta_webhook.rule=Host(`URL_DO_CRM`) && PathPrefix(`/api/webhooks/meta/whatsapp`)"
         - "traefik.http.routers.meta_webhook.entrypoints=websecure"
@@ -308,13 +324,18 @@ services:
         # Porta do serviço
         - "traefik.http.services.meta_cloud.loadbalancer.server.port=8090"
 
+  # ============================================
+  # WA CALL GATEWAY - áudio das ligações da API oficial
+  # ============================================
   wa-call-gateway:
     image: inovanode/sofiacrm-gateway:latest
     restart: always
     environment:
       PORT: 8091
+      # Faixa de portas UDP do áudio. Tem que bater com "ports" abaixo e com o firewall.
       GATEWAY_UDP_MIN: 30000
       GATEWAY_UDP_MAX: 30100
+      # IP PÚBLICO do servidor. Sem ele a ligação atende mas fica MUDA.
       GATEWAY_PUBLIC_IP: IP_DA_VPS
       CRM_API_URL: http://crm_api:3000
       INTERNAL_WEBHOOK_TOKEN: INTERNAL_WEBHOOK_TOKEN #Igual o INTERNAL_WEBHOOK_TOKEN do serviço crm_api
@@ -325,6 +346,11 @@ services:
       - SUA_REDE
     depends_on:
       - crm_api
+    deploy:
+      replicas: 1
+      # Swarm com mais de um nó: descomente para rodar no nó do IP_DA_VPS
+      #placement:
+      #  constraints: [node.hostname == NOME_DO_NO]
 
 volumes:
   whatsmeow_data:
