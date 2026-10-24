@@ -241,6 +241,7 @@ services:
       # LIGAÇÕES VIA WHATSAPP (QR)
       # ============================================
       WHATSMEOW_CALLS_ENABLED: 1
+      WHATSMEOW_ACCEPT_FORMAT: 1
       # Faixa de portas UDP do áudio. Tem que bater com "ports" abaixo e com o firewall.
       WHATSMEOW_ICE_UDP_MIN: 30200
       WHATSMEOW_ICE_UDP_MAX: 30300
